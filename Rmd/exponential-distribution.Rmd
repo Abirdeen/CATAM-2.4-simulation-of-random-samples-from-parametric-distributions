@@ -1,0 +1,25 @@
+---
+title: The exponential distribution
+output: pdf_document
+---
+
+<!--
+Testing a comment
+-->
+
+<!--
+```{r, echo=FALSE}
+library(knitr)
+print("Hello world")
+```
+-->
+
+<!--
+```{r}
+print("Hello world")
+```
+
+```{python, python.reticulate=FALSE}
+print("Hello world")
+```
+-->

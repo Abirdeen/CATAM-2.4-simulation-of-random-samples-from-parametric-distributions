@@ -1,0 +1,4 @@
+---
+title: The chi-square distribution
+output: pdf_document
+---
