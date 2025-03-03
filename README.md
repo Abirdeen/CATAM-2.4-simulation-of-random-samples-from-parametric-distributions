@@ -16,10 +16,10 @@ When a random variable $X$ has a continuous and strictly increasing distribution
 This project uses this idea to sample from some standard parametric distributions.
 
 The distributions considered are:
-- The exponential distribution, covered [here](Rmd/exponential-distribution.Rmd), dealing with CATAM problems 1-4; 
-- The gamma distribution, covered [here](Rmd/gamma-distribution.Rmd), dealing with CATAM problems 5-8;
-- The normal distribution, covered [here](Rmd/normal-distribution.Rmd), dealing with CATAM problems 9-12; and
-- The $\chi^2$ distribution, covered [here](Rmd/chi-square-distribution.Rmd), dealing with CATAM problem 13.
+- The exponential distribution ([Rmd](Rmd/exponential-distribution.Rmd), [pdf](Rmd/exponential-distribution.pdf)), dealing with CATAM problems 1-4; 
+- The gamma distribution ([Rmd](Rmd/gamma-distribution.Rmd), pdf), dealing with CATAM problems 5-8;
+- The normal distribution ([Rmd](Rmd/normal-distribution.Rmd), pdf), dealing with CATAM problems 9-12; and
+- The $\chi^2$ distribution ([Rmd](Rmd/chi-square-distribution.Rmd), pdf), dealing with CATAM problem 13.
 
 ## Appendix A: Proofs
 
