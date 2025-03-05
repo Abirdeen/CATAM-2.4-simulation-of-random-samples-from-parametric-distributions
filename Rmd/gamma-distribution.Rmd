@@ -5,6 +5,7 @@ output: pdf_document
 ```{r, setup, include=FALSE}
 source("../R/pdfs.R")
 source("../R/cdfs.R")
+source("../R/samplers.R")
 
 library("functional")
 library("ggplot2")

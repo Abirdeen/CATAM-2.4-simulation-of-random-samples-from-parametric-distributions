@@ -42,14 +42,3 @@ normal_pdf <- function(x = ? numeric, mu = ? numeric, sigma = ? numeric) {
 chi_square_pdf <- function(x = ? numeric, k = ? integer) {
   return(gamma_pdf(x, k / 2, 2))
 }
-
-#' Provides samples from a given distribution
-#'
-#' @param distribution Function. The inverse of the distribution function.
-#' The parameters must be presupplied, so currying may be needed before calling.
-#' @param n Integer. The number of samples
-#' @return Vector. The samples.
-distribution_sampler <- function(distribution, n = ? numeric) {
-  uniform_samples <- runif(n)
-  return(sapply(uniform_samples, distribution))
-}
