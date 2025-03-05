@@ -2,3 +2,166 @@
 title: The normal distribution
 output: pdf_document
 ---
+```{r, setup, include=FALSE}
+source("../R/pdfs.R")
+source("../R/cdfs.R")
+source("../R/samplers.R")
+
+library("functional")
+library("ggplot2")
+```
+
+The [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution) is the most important distribution in statistics, as a consequence of the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem) and other properties. Parameterised by the mean, $\mu$, and the variance, $\sigma^2$, the probability density function is $$f(x|\mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}.$$
+
+The distribution of $F$ doesn't have a closed form, meaning it is difficult to sample from it with the same technique used for the gamma and exponential distributions. Instead, we use a different idea.
+
+If $(\Phi, V)$ have joint density $f(\phi, v)$, and we define $X(\Phi, V)$ and $Y(\Phi, V)$ such that $(X,Y)$ is a 1-1 function of $(\Phi, V)$, then $(X,Y)$ has joint density $$g(x,y) = f(\phi(x,y), v(x,y)) \left| \frac{\partial(\phi, v)}{\partial(x,y)} \right|.$$
+
+With this in mind, with sensible choices of $\Phi, V, X, Y$, we can obtain the normal distribution as a function of simpler distributions.
+
+Using the result of Problem 9 below, we can take independent uniform variables $U_1, U_2$, define $\Phi = 2\pi U_1$ and $V = -2\ln(1-U_2)$, and then obtain independent normally distributed random variables $$X = \mu_1 + \sigma\sqrt{V}\cos\Phi,$$ $$Y = \mu_2 + \sigma\sqrt{V}\sin\Phi.$$
+
+## Programs
+
+The normal pdf is implemented as `normal_pdf`. 
+
+We can sample from the normal distribution with the following code:
+
+```{r}
+mu <- 0
+sigma <- 1
+n <- 100
+
+normal_samples <- normal_distribution_sampler(n, mu, sigma^2)
+head(normal_samples)
+```
+
+R also has a built-in normal distribution with pdf `dnorm`, which can be sampled with `rnorm`. We can test that this matches our implementation using a one-sample [Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test):
+
+```{r}
+ks_results <- ks.test(normal_samples, "dnorm", mean = mu, sd = sigma)
+ks_results[["p.value"]]
+
+```
+
+In this instance, `r if (ks_results[["p.value"]]<0.05) {"since $p<0.05$, we conclude that the distributions match"} else {"either my code is broken or you experienced an exceptionally rare event"}`.
+
+We can also plot the distributions against each other:
+```{r}
+dat <- data.frame(implementation =
+                    factor(rep(c("normal_cdf", "dnorm"), each = n)),
+                  value = c(normal_samples,
+                            rnorm(n, mean = mu, sd = sigma)))
+
+ggplot(dat, aes(x = value, colour = implementation)) + geom_density()
+```
+
+Here, we have some noise from our relatively low number of samples, but the distributions clearly have the same shape.
+
+## Problems
+
+### Problem 9
+
+Show that if $h(\phi, v) = \frac{1}{4\pi}e^{-v/2}$, $0 \le \phi \le 2\pi$, $v > 0$, and if we define $$X = \mu_1 + \sigma\sqrt{V}\cos\Phi,$$ $$Y = \mu_2 + \sigma\sqrt{V}\sin\Phi,$$ then $X, Y$ are independent $N(\mu_1, \sigma^2)$ and $N(\mu_2, \sigma^2)$ random variables, i.e., $$g(x, y) = \frac{1}{2\pi\sigma^2} e^{-\frac{\{(x - \mu_1)^2 + (y - \mu_2)^2\}}{2\sigma^2}}, -\infty < x, y < \infty$$
+
+#### Solution
+
+We can compute $$V = (\frac{X-\mu_1}{\sigma})^2 + (\frac{Y-\mu_2}{\sigma})^2.$$
+
+Using $V$, we can find $$A = \sin\Phi = \frac{Y - \mu_2}{\sigma\sqrt{V}},$$ $$B = \cos\Phi = \frac{X - \mu_1}{\sigma\sqrt{V}},$$ and thus $$\Phi = \begin{cases} 
+          \arctan(\frac{A}{B}) & 0 < A,B \\
+          \frac{\pi}{2} & 0 = B < A \\
+          \arctan(\frac{A}{B}) + \pi & B < 0 \\
+          \frac{3\pi}{2} & A < B = 0 \\
+          \arctan(\frac{A}{B}) + 2\pi & A < 0 < B
+       \end{cases}$$
+
+Now, we can compute $$g(x,y) = f(\phi(x,y),v(x,y))\left| \frac{\partial(\phi,v)}{\partial(x,y)} \right|$$ $$ = \frac{1}{4\pi}e^{-\frac{\{(x-\mu_1)^2 + (y-\mu_2)^2\}}{2\sigma^2}} \times \frac{2}{\sigma^2}$$ $$ = f(x|\mu_1,\sigma^2)f(y|\mu_2,\sigma^2),$$ as required.
+
+### Problem 10
+
+Explain how to construct an 80% confidence interval for $\mu$.
+
+#### Solution
+
+With $\hat{\mu} = \frac{\sum x_i}{n}$ as the sample mean, and $\hat{\sigma}^2 = \frac{\sum (x_i - \hat{\mu})^2}{n-1}$ as the sample variance, it's a well-known fact that $t = \frac{\hat{\mu} - \mu}{\hat{\sigma}/\sqrt{n}}$ follows the student t distribution with $n-1$ degrees of freedom. If $t_{\alpha}$ is the $\alpha^{th}$ quantile of this distribution, then a (symmetric) $\alpha$% confidence interval for $\mu$ is given by rearranging:
+
+$$[\hat{\mu} - t_{\alpha/2}\frac{\hat{\sigma}}{\sqrt{n}}, \hat{\mu} + t_{1-\alpha/2}\frac{\hat{\sigma}}{\sqrt{n}}].$$
+
+We define the following function to compute a $\alpha$% confidence interval from given normal samples:
+
+```{r}
+confidence_interval <- function(samples, signficance) {
+  n <- length(samples)
+  mean <- sum(samples) / n
+  std_dev <- sqrt(sum((samples - mean)^2) / (n - 1))
+  # `qt` is R's built-in quantile function for the student t distribution.
+  t_lower <- qt((1 - signficance) / 2, n - 1)
+  t_upper <- qt((1 + signficance) / 2, n - 1)
+  lower <- mean + t_lower * (std_dev / sqrt(n))
+  upper <- mean + t_upper * (std_dev / sqrt(n))
+  c(lower, upper)
+}
+```
+
+### Problem 11
+
+For $\mu = 0$, generate a sample of size $n = 100$ from distribution $N(\mu, 1)$ and check whether the confidence interval does indeed contain $\mu$. Repeat this procedure 25 times and display the results in a table with four columns, containing the sample mean, the lower and upper bound of the confidence interval, and an indicator of whether or not the interval contained the true mean. How many times did the interval not contain $\mu$?
+
+#### Solution
+
+We use the following program:
+
+```{r}
+n <- 100
+mu <- 0
+sigma <- 1
+dat <- data.frame(index = integer(),
+                  sample_mean = character(),
+                  lower_bound = character(),
+                  upper_bound = character(),
+                  in_interval = logical())
+for (i in 1: 25) {
+  sample <- normal_distribution_sampler(n, mean = mu, variance = sigma^2)
+  sample_mean <- sum(sample) / n
+  sample_ci <- confidence_interval(sample, 0.8)
+  in_interval <- (sample_ci[1] < mu) & (mu < sample_ci[2])
+  dat[nrow(dat) + 1, ] <- c(i,
+                            round(sample_mean, 5),
+                            round(sample_ci, 5),
+                            in_interval)
+}
+
+knitr::kable(dat)
+```
+
+Of these, `r 25 - sum(dat$in_interval)` sample`r if (25-sum(dat$in_interval) == 1) {''} else {'s'}` didn't contain the true mean, or `r (25 - sum(dat$in_interval)) * 4`%.
+
+### Problem 12
+
+If questions 10 and 11 were to be repeated with $n = 50$ and $\mu = 4$, how many times would you expect the confidence interval not to contain $\mu$?
+
+#### Solution
+
+By definition of the 80% confidence interval, we expect that 20% of times we compute the confidence interval, the true mean will lie outside it, independent of sample size and parameters. In this case, we can test this, with a large number of repetitions to take advantage of the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers):
+
+```{r}
+n <- 50
+mu <- 4
+sigma <- 1
+no_of_successes <- 0
+dat <- data.frame(index = integer(),
+                  sample_mean = character(),
+                  lower_bound = character(),
+                  upper_bound = character(),
+                  in_interval = logical())
+for (i in 1: 100000) {
+  sample <- normal_distribution_sampler(n, mean = mu, variance = sigma^2)
+  sample_mean <- sum(sample) / n
+  sample_ci <- confidence_interval(sample, 0.8)
+  no_of_successes <- no_of_successes + ((sample_ci[1] < mu)
+                                        & (mu < sample_ci[2]))
+}
+```
+
+In this case, `r (100000-no_of_successes)/1000`% of confidence intervals didn't contain the true mean, which is `r if (abs((100000-no_of_successes)/1000 - 20) < 1) {'about what'} else {'different than'}` we expected.
