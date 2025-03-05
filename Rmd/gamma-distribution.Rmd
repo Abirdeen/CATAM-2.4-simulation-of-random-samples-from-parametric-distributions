@@ -35,7 +35,7 @@ gamma_samples <- distribution_sampler(distribution, n)
 head(gamma_samples)
 ```
 
-R also has a built-in exponential distribution with pdf `dgamma`, which can be sampled with `rgamma`. We can test that this matches our implementation using a one-sample [Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test):
+R also has a built-in gamma distribution with pdf `dgamma`, which can be sampled with `rgamma`. We can test that this matches our implementation using a one-sample [Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test):
 
 ```{r}
 ks_results <- ks.test(gamma_samples, "dgamma", shape = alpha, rate = theta)
