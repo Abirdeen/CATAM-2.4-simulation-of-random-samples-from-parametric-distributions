@@ -1,14 +1,16 @@
 library(types)
 library(docstring)
+library(expint)
+library(pracma)
 
 #' CDF of the exponential distribution.
 #'
 #' @param x Non-negative float. The sample point.
 #' @param rate Positive float. The rate parameter.
-#' @return Float. If X~Exp(theta), this represents P(X<=`x`).
+#' @return Float. If X~Exp(rate), this represents P(X<=`x`).
 #' @examples
-#' exponential_distribution(0,rate) = 0
-#' exponential_distribution(-log(y),1) = 1-y
+#' exponential_distribution(0, rate) = 0
+#' exponential_distribution(-log(y), 1) = 1 - y
 exponential_distribution <- function(x = ? numeric, rate = ? numeric) {
   return(1 - exp(-x * rate))
 }
@@ -17,10 +19,10 @@ exponential_distribution <- function(x = ? numeric, rate = ? numeric) {
 #'
 #' @param x Non-negative float, 0<=`x`<=1. The sample point.
 #' @param rate Positive float. The rate parameter.
-#' @return Float. If X~Exp(theta), this represents m such that P(X<=m) = `x`.
+#' @return Float. If X~Exp(rate), this represents m such that P(X<=m) = `x`.
 #' @examples
-#' exponential_distribution(0,theta) = 0
-#' exponential_distribution(-log(y),1) = 1-y
+#' exponential_distribution(0, rate) = 0
+#' exponential_distribution(-log(y), 1) = 1 - y
 exponential_distribution_inv <- function(x = ? numeric, rate = ? numeric) {
   return(-log(1 - x) / rate)
 }

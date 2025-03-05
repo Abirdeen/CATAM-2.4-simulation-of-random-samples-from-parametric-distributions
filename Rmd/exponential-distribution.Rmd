@@ -58,7 +58,7 @@ Suppose that instead of indexing the probability distribution function by its ra
 
 #### Solution
 
-We know that $\int f(x|\theta) \text{ d}x = F(x)$, so we need to solve $F(m) = \frac{1}{2}$. We find that $m = \frac{\ln(2)}{\theta}$, or $\theta(m) = \frac{\ln(2)}{m}$, so that $$g(x|m) = f(x|\theta(m)) \\\ = \frac{\ln(2)}{m}e^{-\frac{\ln(2)}{m}x} \\\ = \frac{\ln(2)}{m}2^{-\frac{x}{m}}.$$
+We know that $\int f(x|\theta) \text{ d}x = F(x)$, so we need to solve $F(m) = \frac{1}{2}$. We find that $m = \frac{\ln(2)}{\theta}$, or $\theta(m) = \frac{\ln(2)}{m}$, so that $$g(x|m) = f(x|\theta(m)) $$ $$ = \frac{\ln(2)}{m}e^{-\frac{\ln(2)}{m}x} $$ $$ = \frac{\ln(2)}{m}2^{-\frac{x}{m}}.$$
 
 ### Problem 2
 
@@ -78,7 +78,7 @@ distribution <- Curry(exponential_distribution_inv, rate = theta)
 exp_samples <- distribution_sampler(distribution, n)
 ```
 
-To compute the log likelihood, we can observe that $$\ell(m) = \ln \prod^n_{i=1} g(x_i|m) \\\ = \ln \prod^n_{i=1} \frac{\ln(2)}{m}2^{-\frac{x_i}{m}} \\\ = \ln(\frac{\ln(2)^n}{m^n}) + \ln(2^{-\frac{\sum x_i}{m}}) \\\ = n \ln(\frac{\ln(2)}{m}) - \frac{\sum x_i}{m}\ln(2) \\\ = n \times (\ln\ln(2) - \ln(m) - \frac{\bar{x}}{m}\ln(2))$$
+To compute the log likelihood, we can observe that $$\ell(m) = \ln \prod^n_{i=1} g(x_i|m) $$ $$ = \ln \prod^n_{i=1} \frac{\ln(2)}{m}2^{-\frac{x_i}{m}} $$ $$ = \ln(\frac{\ln(2)^n}{m^n}) + \ln(2^{-\frac{\sum x_i}{m}}) $$ $$ = n \ln(\frac{\ln(2)}{m}) - \frac{\sum x_i}{m}\ln(2) $$ $$ = n \times (\ln\ln(2) - \ln(m) - \frac{\bar{x}}{m}\ln(2))$$
 
 Where $\bar{x}$ is the mean of the $x_i$.
 
@@ -137,6 +137,6 @@ Suppose that $X, Y$ are independent random variables, each with a probability di
 
 #### Solution
 
-We can compute $$M_X(\lambda) = \int_0^{\infty} e^{\lambda x}f(x|\theta) \text{dx} \\\ = \int_0^{\infty} \theta e^{(\lambda - \theta)x} \text{dx} \\\ = \frac{\theta}{\theta - \lambda}.$$
+We can compute $$M_X(\lambda) = \int_0^{\infty} e^{\lambda x}f(x|\theta) \text{dx} $$ $$ = \int_0^{\infty} \theta e^{(\lambda - \theta)x} \text{dx} $$ $$ = \frac{\theta}{\theta - \lambda}.$$
 
 Then we know that, since $X$ and $Y$ are independent, $M_{X+Y}(\lambda) = M_X(\lambda) \times M_Y(\lambda) = \frac{\theta^2}{(\theta - \lambda)^2}$. But this is the moment generating function for a $\Gamma(2,\theta)$-distributed variable. Since the moment generating function determines the distribution, we are done.
