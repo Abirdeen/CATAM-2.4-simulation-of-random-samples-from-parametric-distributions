@@ -19,7 +19,7 @@ The distributions considered are:
 - The exponential distribution ([Rmd](Rmd/exponential-distribution.Rmd), [pdf](Rmd/exponential-distribution.pdf)), dealing with CATAM problems 1-4; 
 - The gamma distribution ([Rmd](Rmd/gamma-distribution.Rmd), [pdf](Rmd/gamma-distribution.pdf)), dealing with CATAM problems 5-8;
 - The normal distribution ([Rmd](Rmd/normal-distribution.Rmd), [pdf](Rmd/normal-distribution.pdf)), dealing with CATAM problems 9-12; and
-- The $\chi^2$ distribution ([Rmd](Rmd/chi-square-distribution.Rmd), pdf), dealing with CATAM problem 13.
+- The $\chi^2$ distribution ([Rmd](Rmd/chi-square-distribution.Rmd), [pdf](Rmd/chi-square-distribution.pdf)), dealing with CATAM problem 13.
 
 ## Appendix A: Proofs
 

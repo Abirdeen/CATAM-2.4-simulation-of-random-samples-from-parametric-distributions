@@ -26,3 +26,17 @@ normal_distribution_sampler <- function(n = ? numeric,
                                               -2 * log(1 - x) })
   return(mean + sqrt(variance) * sqrt(v) * sin(phi))
 }
+
+#' Provides samples from a normal distribution
+#'
+#' @param n Integer. The number of samples.
+#' @param k Integer. The degrees of freedom.
+#' @return Vector. The samples.
+chi_square_sampler <- function(n = ? numeric, k = ? numeric) {
+  results <- c()
+  for (i in 1: n) {
+    sample <- sum(normal_distribution_sampler(k, 0, 1)^2)
+    results <- c(results, sample)
+  }
+  return(results)
+}
